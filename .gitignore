@@ -153,4 +153,4 @@ terraform.tfstate.backup
 go.work
 
 # Postman tests reports
-tests/postman/reports/
+tests/postman/reports/minikube-linux-amd64
