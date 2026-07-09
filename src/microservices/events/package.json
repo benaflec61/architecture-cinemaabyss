@@ -1,0 +1,13 @@
+{
+  "name": "cinemaabyss-events",
+  "version": "1.0.0",
+  "description": "Events microservice with Kafka producer and consumer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "kafkajs": "^2.2.4"
+  }
+}

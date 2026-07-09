@@ -14,6 +14,8 @@ System_Boundary(cinema_boundary, "CinemaAbyss", "") {
 
   Container(gate, "Шлюз", "nginx", "")
 
+  Container(proxy, "API Gateway (Proxy)", "Go", "Единая точка вызова backend-сервисов, маршрутизация и постепенный переход (Strangler Fig)")
+
   Container(users, "Сервис пользователей", "Go", "Профили, папки «Избранное», история просмотров")
   Container(subscriptions, "Сервис подписок", "Go", "Подписки, скидки, статусы")
   Container(video_meta, "Сервис мета-информации", "Go", "Метаданные: фильмы, жанры, актёры, оценки")
@@ -40,19 +42,14 @@ Rel(gate, bff_mobile, "Uses")
 Rel(gate, bff_tv, "Uses")
 Rel(gate, bff_desktop, "Uses")
 
-Rel(gate, stream_service, "Uses")
+Rel(bff_mobile, proxy, "API", "HTTPS")
+Rel(bff_tv, proxy, "API", "HTTPS")
+Rel(bff_desktop, proxy, "API", "HTTPS")
 
-Rel(bff_mobile, users, "API", "HTTPS")
-Rel(bff_mobile, subscriptions, "API", "HTTPS")
-Rel(bff_mobile, video_meta, "API", "HTTPS")
-
-Rel(bff_tv, users, "API", "HTTPS")
-Rel(bff_tv, subscriptions, "API", "HTTPS")
-Rel(bff_tv, video_meta, "API", "HTTPS")
-
-Rel(bff_desktop, users, "API", "HTTPS")
-Rel(bff_desktop, subscriptions, "API", "HTTPS")
-Rel(bff_desktop, video_meta, "API", "HTTPS")
+Rel(proxy, users, "API", "HTTPS")
+Rel(proxy, subscriptions, "API", "HTTPS")
+Rel(proxy, video_meta, "API", "HTTPS")
+Rel(proxy, stream_service, "API", "HTTPS")
 
 BiRel(users, db_users, "SQL")
 BiRel(subscriptions, db_subscriptions, "SQL")
