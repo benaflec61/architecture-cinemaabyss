@@ -1,0 +1,70 @@
+@startuml ../images/C4_Cinema_Containers
+!include <C4/C4_Context>
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+Person(user, "Пользователь системы", "Телефоны, ноутбуки, смарт ТВ")
+
+System_Boundary(cinema_boundary, "CinemaAbyss", "") {
+  Container(gui, "Пользовательский UI", "React", "")
+
+  Container(bff_mobile, "BFF для телефонов", "Go", "")
+  Container(bff_tv, "BFF для TV", "Go", "")
+  Container(bff_desktop, "BFF для ПК", "Go", "")
+
+  Container(gate, "Шлюз", "nginx", "")
+
+  Container(proxy, "API Gateway (Proxy)", "Go", "Единая точка вызова backend-сервисов, маршрутизация и постепенный переход (Strangler Fig)")
+
+  Container(users, "Сервис пользователей", "Go", "Профили, папки «Избранное», история просмотров")
+  Container(subscriptions, "Сервис подписок", "Go", "Подписки, скидки, статусы")
+  Container(video_meta, "Сервис мета-информации", "Go", "Метаданные: фильмы, жанры, актёры, оценки")
+
+  Container(stream_service, "Стриминговый сервис потокового видео", "Go", "")
+
+  ContainerDb(db_users, "БД Пользователей", "postgres", "")
+  ContainerDb(db_subscriptions, "БД Подписок и платежей", "postgres", "")
+  ContainerDb(db_video_meta, "БД Видео и Метаданных", "postgres", "")
+
+  ContainerDb(kafka, "Брокер сообщений", "Kafka", "Асинхронные события: создание оценки, просмотр, подписка")
+
+}
+
+System(rec_sys, "Рекомендательная система")
+System(pay_sys, "Платежная система")
+System(netflix_sys, "Онлайн кинотеатры")
+System(s3, "Файловое хранилище", "S3")
+
+
+Rel(gui, gate, "Uses", "HTTPS")
+
+Rel(gate, bff_mobile, "Uses")
+Rel(gate, bff_tv, "Uses")
+Rel(gate, bff_desktop, "Uses")
+
+Rel(bff_mobile, proxy, "API", "HTTPS")
+Rel(bff_tv, proxy, "API", "HTTPS")
+Rel(bff_desktop, proxy, "API", "HTTPS")
+
+Rel(proxy, users, "API", "HTTPS")
+Rel(proxy, subscriptions, "API", "HTTPS")
+Rel(proxy, video_meta, "API", "HTTPS")
+Rel(proxy, stream_service, "API", "HTTPS")
+
+BiRel(users, db_users, "SQL")
+BiRel(subscriptions, db_subscriptions, "SQL")
+BiRel(video_meta, db_video_meta, "SQL")
+
+BiRel(users, kafka, "API", "HTTPS")
+BiRel(subscriptions, kafka, "API", "HTTPS")
+BiRel(video_meta, kafka, "API", "HTTPS")
+
+Rel(user, gui, "Uses", "HTTPS")
+
+Rel(cinema_boundary, pay_sys, "API", "REST")
+Rel(cinema_boundary, netflix_sys, "API", "REST")
+Rel(cinema_boundary, s3, "API", "REST")
+Rel(cinema_boundary, rec_sys, "API", "REST")
+
+
+@enduml
